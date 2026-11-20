@@ -55,8 +55,7 @@ public class AccountPlugin : PluginBase
 
     protected override void ExecutePlugin(ILocalPluginContext context)
     {
-        var target = (Entity)context.PluginExecutionContext.InputParameters["Target"];
-        context.Trace("Creating account {0}", target.GetAttributeValue<string>("name"));
+        context.Trace("Creating account {0}", context.GetTarget().GetAttributeValue<string>("name"));
     }
 }
 ```
@@ -76,6 +75,17 @@ protected override void ExecutePlugin(ILocalPluginContext context)
     }
 }
 ```
+
+Context helpers:
+
+| Method | Returns |
+| --- | --- |
+| `context.Is(stage, message)` | true when the execution matches the stage and message |
+| `context.GetTarget()` | the `Target` entity, or null |
+| `context.GetPreImage(name)` / `context.GetPostImage(name)` | the image, or null when it isn't registered |
+| `context.TryGetPreImage(out image, name)` / `context.TryGetPostImage(out image, name)` | false when the image isn't registered |
+
+The image name defaults to `PluginImage.PreImage` / `PluginImage.PostImage`. Use the same constants in the spkl attribute (`Image1Name = PluginImage.PreImage`) so the names can't drift apart.
 
 `PluginBase` traces entry and exit and wraps unexpected exceptions in `InvalidPluginExecutionException`. Plug-in instances are cached and shared between threads, so keep no per-execution state in fields.
 
