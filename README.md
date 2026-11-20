@@ -61,7 +61,21 @@ public class AccountPlugin : PluginBase
 }
 ```
 
-When one class has several steps, branch on `context.PluginExecutionContext.MessageName` and `Stage`; `PluginMessage` and `PluginStage` hold the common values.
+When one class has several steps, branch with `context.Is`:
+
+```csharp
+protected override void ExecutePlugin(ILocalPluginContext context)
+{
+    if (context.Is(PluginStage.PreOperation, PluginMessage.Update))
+    {
+        // ...
+    }
+    else if (context.Is(PluginStage.PostOperation, PluginMessage.Create))
+    {
+        // ...
+    }
+}
+```
 
 `PluginBase` traces entry and exit and wraps unexpected exceptions in `InvalidPluginExecutionException`. Plug-in instances are cached and shared between threads, so keep no per-execution state in fields.
 

@@ -13,6 +13,11 @@ public class AccountPlugin : PluginBase
 
     protected override void ExecutePlugin(ILocalPluginContext context)
     {
+        if (!context.Is(PluginStage.PreOperation, PluginMessage.Create))
+        {
+            return;
+        }
+
         var target = (Entity)context.PluginExecutionContext.InputParameters["Target"];
         context.Trace("Creating account {0}", target.GetAttributeValue<string>("name"));
     }
