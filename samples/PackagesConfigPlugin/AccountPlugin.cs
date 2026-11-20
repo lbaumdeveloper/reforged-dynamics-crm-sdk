@@ -21,18 +21,17 @@ public class AccountPlugin : PluginBase
 
     protected override void ExecutePlugin(ILocalPluginContext context)
     {
-        var target = context.GetTarget();
+        var target = context.GetRequiredTarget();
 
         if (context.Is(PluginStage.PreOperation, PluginMessage.Create))
         {
             context.Trace("Creating account {0}", target.GetAttributeValue<string>("name"));
         }
-        else if (context.Is(PluginStage.PreOperation, PluginMessage.Update)
-            && context.TryGetPreImage(out var preImage))
+        else if (context.Is(PluginStage.PreOperation, PluginMessage.Update))
         {
             context.Trace(
                 "Renaming account {0} to {1}",
-                preImage.GetAttributeValue<string>("name"),
+                context.GetRequiredPreImage().GetAttributeValue<string>("name"),
                 target.GetAttributeValue<string>("name"));
         }
     }

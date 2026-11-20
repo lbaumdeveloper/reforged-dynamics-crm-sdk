@@ -32,6 +32,21 @@ namespace Reforged.Dynamics.Crm.Sdk.Plugins
         }
 
         /// <summary>
+        /// Returns the Target input parameter as an entity.
+        /// Throws <see cref="InvalidPluginExecutionException"/> when it is missing or not an entity.
+        /// </summary>
+        public static Entity GetRequiredTarget(this ILocalPluginContext context)
+        {
+            var target = context.GetTarget();
+            if (target != null)
+            {
+                return target;
+            }
+
+            throw CreateMissingException(context, "Target entity");
+        }
+
+        /// <summary>
         /// Returns the pre-entity image with the given name, or null when it is not registered.
         /// </summary>
         public static Entity GetPreImage(this ILocalPluginContext context, string name = PluginImage.PreImage)
@@ -49,6 +64,21 @@ namespace Reforged.Dynamics.Crm.Sdk.Plugins
         }
 
         /// <summary>
+        /// Returns the pre-entity image with the given name.
+        /// Throws <see cref="InvalidPluginExecutionException"/> when it is not registered.
+        /// </summary>
+        public static Entity GetRequiredPreImage(this ILocalPluginContext context, string name = PluginImage.PreImage)
+        {
+            Entity image;
+            if (context.TryGetPreImage(out image, name))
+            {
+                return image;
+            }
+
+            throw CreateMissingException(context, string.Format("Pre-image '{0}'", name));
+        }
+
+        /// <summary>
         /// Returns the post-entity image with the given name, or null when it is not registered.
         /// </summary>
         public static Entity GetPostImage(this ILocalPluginContext context, string name = PluginImage.PostImage)
@@ -63,6 +93,32 @@ namespace Reforged.Dynamics.Crm.Sdk.Plugins
         public static bool TryGetPostImage(this ILocalPluginContext context, out Entity image, string name = PluginImage.PostImage)
         {
             return TryGetImage(GetExecutionContext(context).PostEntityImages, name, out image);
+        }
+
+        /// <summary>
+        /// Returns the post-entity image with the given name.
+        /// Throws <see cref="InvalidPluginExecutionException"/> when it is not registered.
+        /// </summary>
+        public static Entity GetRequiredPostImage(this ILocalPluginContext context, string name = PluginImage.PostImage)
+        {
+            Entity image;
+            if (context.TryGetPostImage(out image, name))
+            {
+                return image;
+            }
+
+            throw CreateMissingException(context, string.Format("Post-image '{0}'", name));
+        }
+
+        private static InvalidPluginExecutionException CreateMissingException(ILocalPluginContext context, string item)
+        {
+            var executionContext = GetExecutionContext(context);
+            return new InvalidPluginExecutionException(string.Format(
+                "{0} is missing for {1} of {2} in stage {3}. Check the step registration.",
+                item,
+                executionContext.MessageName,
+                executionContext.PrimaryEntityName,
+                executionContext.Stage));
         }
 
         private static bool TryGetImage(EntityImageCollection images, string name, out Entity image)

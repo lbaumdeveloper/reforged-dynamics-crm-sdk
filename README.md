@@ -84,6 +84,8 @@ Context helpers:
 | `context.GetTarget()` | the `Target` entity, or null |
 | `context.GetPreImage(name)` / `context.GetPostImage(name)` | the image, or null when it isn't registered |
 | `context.TryGetPreImage(out image, name)` / `context.TryGetPostImage(out image, name)` | false when the image isn't registered |
+| `context.GetRequiredTarget()` | the `Target` entity; throws `InvalidPluginExecutionException` when missing |
+| `context.GetRequiredPreImage(name)` / `context.GetRequiredPostImage(name)` | the image; throws `InvalidPluginExecutionException` naming the image, message, entity and stage when it isn't registered |
 
 The image name defaults to `PluginImage.PreImage` / `PluginImage.PostImage`. Use the same constants in the spkl attribute (`Image1Name = PluginImage.PreImage`) so the names can't drift apart.
 
