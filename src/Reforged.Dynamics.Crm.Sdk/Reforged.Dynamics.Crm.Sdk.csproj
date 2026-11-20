@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <None Include="**/*.cs" Exclude="bin/**;obj/**" Pack="true" PackagePath="contentFiles/cs/any/Reforged.Dynamics.Crm.Sdk/" BuildAction="Compile" />
+    <None Include="**/*.cs" Exclude="bin/**;obj/**" Pack="true" PackagePath="content/Reforged.Dynamics.Crm.Sdk/" />
     <None Include="../../README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 

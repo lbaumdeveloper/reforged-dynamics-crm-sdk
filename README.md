@@ -8,7 +8,7 @@ The NuGet package is a **source package**. Its `.cs` files are compiled into you
 
 Requirements for the consuming project:
 
-- `PackageReference` (SDK-style projects, or classic projects switched to `PackageReference`). `packages.config` does not support content files.
+- `PackageReference` or `packages.config`. With `PackageReference` the files are linked from the package and update with it. With `packages.config` NuGet copies them into a `Reforged.Dynamics.Crm.Sdk` folder in your project.
 - Target framework .NET Framework 4.6.2 or 4.8.
 - C# 7.3 or later. The SDK sources are kept at C# 7.3, the default for .NET Framework projects.
 
@@ -36,20 +36,24 @@ To try a build before it is published, download the `nuget-package` artifact fro
 dotnet nuget add source C:\LocalNuGet --name LocalNuGet
 ```
 
-The SDK files then appear under the package in Solution Explorer and are compiled into your plug-in assembly. Register only your plug-in assembly with the Plug-in Registration Tool; `Microsoft.Xrm.Sdk.dll` and the other dependency DLLs in `bin` are already on the CRM server.
+The SDK files are then compiled into your plug-in assembly. Register only your plug-in assembly; `Microsoft.Xrm.Sdk.dll` and the other dependency DLLs in `bin` are already on the CRM server.
 
 ## Writing a plug-in
 
+Steps are registered outside the code, for example with [spkl](https://github.com/scottdurow/SparkleXrm/wiki/spkl) `CrmPluginRegistration` attributes. Derive from `PluginBase` and implement `ExecutePlugin`; it runs for every step registered on the class.
+
 ```csharp
+[CrmPluginRegistration(
+    MessageNameEnum.Create, "account", StageEnum.PreOperation, ExecutionModeEnum.Synchronous,
+    "", "AccountPlugin: Create of account", 1, IsolationModeEnum.Sandbox)]
 public class AccountPlugin : PluginBase
 {
     public AccountPlugin(string unsecureConfiguration, string secureConfiguration)
         : base(unsecureConfiguration, secureConfiguration)
     {
-        RegisterEvent(PluginStage.PreOperation, PluginMessage.Create, "account", OnPreCreate);
     }
 
-    private void OnPreCreate(ILocalPluginContext context)
+    protected override void ExecutePlugin(ILocalPluginContext context)
     {
         var target = (Entity)context.PluginExecutionContext.InputParameters["Target"];
         context.Trace("Creating account {0}", target.GetAttributeValue<string>("name"));
@@ -57,7 +61,9 @@ public class AccountPlugin : PluginBase
 }
 ```
 
-`PluginBase` traces entry and exit, runs every handler matching the current stage, message and entity, and wraps unexpected exceptions in `InvalidPluginExecutionException`. Plug-in instances are cached and shared between threads, so register handlers only in the constructor and keep no per-execution state in fields.
+When one class has several steps, branch on `context.PluginExecutionContext.MessageName` and `Stage`; `PluginMessage` and `PluginStage` hold the common values.
+
+`PluginBase` traces entry and exit and wraps unexpected exceptions in `InvalidPluginExecutionException`. Plug-in instances are cached and shared between threads, so keep no per-execution state in fields.
 
 ## Releasing
 
