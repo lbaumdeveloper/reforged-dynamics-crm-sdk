@@ -14,17 +14,21 @@ Requirements for the consuming project:
 
 ## Installing
 
-In Visual Studio, open **Manage NuGet Packages** on your plug-in project and install `Reforged.Dynamics.Crm.Sdk`, or run:
+The package is published to GitHub Packages. GitHub requires a token to install from it, even for public packages.
 
-```bash
-dotnet add package Reforged.Dynamics.Crm.Sdk
-```
+1. Create a [personal access token (classic)](https://github.com/settings/tokens) with the `read:packages` scope.
+2. Add the feed once per machine:
 
-which adds:
+   ```bash
+   dotnet nuget add source https://nuget.pkg.github.com/lbaumdeveloper/index.json --name reforged --username <github-user> --password <token> --store-password-in-clear-text
+   ```
 
-```xml
-<PackageReference Include="Reforged.Dynamics.Crm.Sdk" Version="0.1.0" />
-```
+   Visual Studio picks the source up from the user-level `NuGet.Config`.
+3. Install `Reforged.Dynamics.Crm.Sdk` through **Manage NuGet Packages** on your plug-in project, or run:
+
+   ```bash
+   dotnet add package Reforged.Dynamics.Crm.Sdk
+   ```
 
 To try a build before it is published, download the `nuget-package` artifact from a workflow run, put the `.nupkg` in a folder and add that folder as a package source:
 
@@ -57,7 +61,7 @@ public class AccountPlugin : PluginBase
 
 ## Releasing
 
-Pushing a tag such as `v0.2.0` builds the package with version `0.2.0` and publishes it to nuget.org. This needs a repository secret `NUGET_API_KEY` holding a nuget.org API key with push rights for `Reforged.Dynamics.Crm.Sdk`.
+Pushing a tag such as `v0.2.0` builds the package with version `0.2.0` and publishes it to GitHub Packages using the workflow's built-in token. No secret is needed.
 
 ```bash
 git tag v0.2.0
