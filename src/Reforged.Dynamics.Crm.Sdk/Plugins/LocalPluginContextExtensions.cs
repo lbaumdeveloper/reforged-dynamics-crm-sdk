@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Microsoft.Xrm.Sdk;
 
 namespace Reforged.Dynamics.Crm.Sdk.Plugins
@@ -9,6 +10,28 @@ namespace Reforged.Dynamics.Crm.Sdk.Plugins
     public static class LocalPluginContextExtensions
     {
         private const string TargetParameter = "Target";
+
+        /// <summary>
+        /// Writes a message to the plug-in trace log. Calls are compiled only when the consuming
+        /// project defines DEBUG, so Release builds contain no tracing and its arguments are not evaluated.
+        /// </summary>
+        [Conditional("DEBUG")]
+        public static void Trace(this ILocalPluginContext context, string format, params object[] args)
+        {
+            var tracingService = EnsureContext(context).TracingService;
+            if (tracingService == null || string.IsNullOrEmpty(format))
+            {
+                return;
+            }
+
+            if (args == null || args.Length == 0)
+            {
+                tracingService.Trace("{0}", format);
+                return;
+            }
+
+            tracingService.Trace(format, args);
+        }
 
         /// <summary>
         /// Returns true when the current execution runs in the given stage for the given message.
@@ -129,12 +152,17 @@ namespace Reforged.Dynamics.Crm.Sdk.Plugins
 
         private static IPluginExecutionContext GetExecutionContext(ILocalPluginContext context)
         {
+            return EnsureContext(context).PluginExecutionContext;
+        }
+
+        private static ILocalPluginContext EnsureContext(ILocalPluginContext context)
+        {
             if (context == null)
             {
                 throw new ArgumentNullException(nameof(context));
             }
 
-            return context.PluginExecutionContext;
+            return context;
         }
     }
 }

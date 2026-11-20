@@ -34,22 +34,6 @@ namespace Reforged.Dynamics.Crm.Sdk.Plugins
         public IOrganizationService SystemOrganizationService =>
             systemOrganizationService ?? (systemOrganizationService = OrganizationServiceFactory.CreateOrganizationService(null));
 
-        public void Trace(string format, params object[] args)
-        {
-            if (TracingService == null || string.IsNullOrEmpty(format))
-            {
-                return;
-            }
-
-            if (args == null || args.Length == 0)
-            {
-                TracingService.Trace("{0}", format);
-                return;
-            }
-
-            TracingService.Trace(format, args);
-        }
-
         private static T GetService<T>(IServiceProvider serviceProvider)
         {
             return (T)serviceProvider.GetService(typeof(T));

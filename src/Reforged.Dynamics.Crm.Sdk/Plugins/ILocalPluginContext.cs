@@ -25,10 +25,5 @@ namespace Reforged.Dynamics.Crm.Sdk.Plugins
         /// Organization service running as the SYSTEM user.
         /// </summary>
         IOrganizationService SystemOrganizationService { get; }
-
-        /// <summary>
-        /// Writes a message to the plug-in trace log.
-        /// </summary>
-        void Trace(string format, params object[] args);
     }
 }
