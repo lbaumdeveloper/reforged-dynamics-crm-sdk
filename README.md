@@ -91,6 +91,12 @@ The image name defaults to `PluginImage.PreImage` / `PluginImage.PostImage`. Use
 
 `PluginBase` traces entry and exit and wraps unexpected exceptions in `InvalidPluginExecutionException`. Plug-in instances are cached and shared between threads, so keep no per-execution state in fields.
 
+### Tracing
+
+`context.Trace(...)` is marked `[Conditional("DEBUG")]`. Because the SDK is compiled into your plug-in, the calls exist only when your project builds with `DEBUG` defined (the Debug configuration). In Release builds the compiler removes every call, including the evaluation of its arguments, so production assemblies write nothing to the plug-in trace log and throw no errors. This applies to `PluginBase`'s own entry, exit and failure traces as well; exceptions still reach the platform as `InvalidPluginExecutionException` with the original exception as inner exception.
+
+`context.TracingService` stays available for messages that must be traced in Release too.
+
 ## Releasing
 
 Pushing a tag such as `v0.2.0` builds the package with version `0.2.0` and publishes it to GitHub Packages using the workflow's built-in token. No secret is needed.
