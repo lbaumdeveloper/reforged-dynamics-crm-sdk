@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;net48</TargetFrameworks>
+    <RootNamespace>Reforged.Dynamics.Crm.Sdk</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Reforged.Dynamics.Crm.Sdk</PackageId>
+    <Description>Source package with base classes and helpers for Dynamics 365 v9 on-premises plug-ins. The code compiles into the consuming plug-in assembly, so no additional assembly has to be deployed to the CRM server.</Description>
+    <PackageTags>dynamics365;crm;xrm;plugin;on-premises;source</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.60" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="**/*.cs" Exclude="bin/**;obj/**" Pack="true" PackagePath="contentFiles/cs/any/Reforged.Dynamics.Crm.Sdk/" BuildAction="Compile" />
+    <None Include="**/*.cs" Exclude="bin/**;obj/**" Pack="true" PackagePath="content/Reforged.Dynamics.Crm.Sdk/" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+</Project>
